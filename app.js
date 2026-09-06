@@ -453,8 +453,6 @@
     vinyl.classList.remove("spinning");
   }
 
-  const REVEAL_AUTO_PAUSE_SEC = 3;
-
   function onReveal() {
     if (!currentTrack) return;
     const t = currentTrack;
@@ -466,13 +464,13 @@
     flipCard.classList.add("revealed");
     revealBtn.disabled = true;
     nextBtn.hidden = false;
-    scheduleAutoPause(REVEAL_AUTO_PAUSE_SEC);
   }
 
-  function onNext() {
+  async function onNext() {
     clearAutoPauseTimer();
+    await pausePlayback();
+    vinyl.classList.remove("spinning");
     drawNextTrack();
-    onPlay();
   }
 
   function onReshuffle() {
