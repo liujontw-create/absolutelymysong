@@ -32,6 +32,8 @@
   const connectBtn = el("connectBtn");
   const setupError = el("setupError");
   const logoutBtn = el("logoutBtn");
+  const qrSection = el("qrSection");
+  const qrCanvas = el("qrCanvas");
 
   const playlistInput = el("playlistInput");
   const playlistError = el("playlistError");
@@ -76,6 +78,21 @@
       redirectUriDisplay.select();
     }
   });
+
+  // Encodes the Client ID into a URL so a phone can scan it instead of typing it in.
+  function renderClientIdQr() {
+    const clientId = clientIdInput.value.trim();
+    if (!clientId || typeof QRCode === "undefined") {
+      qrSection.hidden = true;
+      return;
+    }
+    const url = `${redirectUri}?client_id=${encodeURIComponent(clientId)}`;
+    qrCanvas.innerHTML = "";
+    new QRCode(qrCanvas, { text: url, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
+    qrSection.hidden = false;
+  }
+
+  clientIdInput.addEventListener("input", renderClientIdQr);
 
   // ---------- PKCE helpers ----------
   function randomString(length) {
@@ -565,6 +582,15 @@
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
     const authError = urlParams.get("error");
+    const scannedClientId = urlParams.get("client_id");
+
+    if (scannedClientId) {
+      clientIdInput.value = scannedClientId;
+      localStorage.setItem(LS_KEYS.clientId, scannedClientId);
+      window.history.replaceState({}, "", redirectUri);
+    }
+
+    renderClientIdQr();
 
     if (authError) {
       showError(setupError, "Spotify 授權失敗：" + authError);

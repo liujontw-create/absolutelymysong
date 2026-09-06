@@ -136,6 +136,29 @@ button {
   margin-top: 10px;
 }
 
+.qr-section {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.qr-section > label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
+.qr-canvas {
+  display: inline-block;
+  padding: 10px;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.qr-canvas canvas {
+  display: block;
+}
+
 .playlist-info {
   display: flex;
   align-items: center;

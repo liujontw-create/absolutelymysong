@@ -37,6 +37,11 @@
     </div>
     <button id="connectBtn" class="primary-btn">連接 Spotify</button>
     <p id="setupError" class="error-text" hidden></p>
+
+    <div id="qrSection" class="qr-section" hidden>
+      <label>用手機開啟（掃碼自動帶入 Client ID）</label>
+      <div id="qrCanvas" class="qr-canvas"></div>
+    </div>
   </section>
 
   <!-- Step 2: 歌單設定 -->
@@ -139,6 +144,7 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
