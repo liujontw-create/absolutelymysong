@@ -460,20 +460,22 @@ select:focus {
   background: #333;
 }
 
-.reveal-year {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: var(--green);
+.reveal-artist {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
 .reveal-title {
-  font-weight: 700;
-  font-size: 1.05rem;
+  font-weight: 800;
+  font-size: 1.4rem;
+  line-height: 1.25;
 }
 
-.reveal-artist {
-  color: var(--text-dim);
-  font-size: 0.9rem;
+.reveal-year {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--green);
 }
 
 .controls {
