@@ -103,7 +103,10 @@
   <section id="gameSection" class="panel" hidden>
     <div class="game-topline">
       <span id="progressCounter" class="progress-counter"></span>
-      <button id="reloadPlaylistBtn" class="ghost-btn small">重新整理歌單</button>
+      <div class="topline-actions">
+        <button id="gestureToggleBtn" class="ghost-btn small" title="啟用手機翻面手勢">📱 翻面</button>
+        <button id="reloadPlaylistBtn" class="ghost-btn small" title="重新整理歌單">⟳ 更新</button>
+      </div>
     </div>
 
     <div class="card-stage">
@@ -126,17 +129,17 @@
       </div>
     </div>
 
-    <div class="controls">
-      <button id="playBtn" class="control-btn">▶ 播放</button>
-      <button id="replayBtn" class="control-btn">↺ 重播</button>
-      <button id="pauseBtn" class="control-btn">⏸ 暫停</button>
-      <button id="revealBtn" class="control-btn primary">🔄 翻牌公布答案</button>
+    <div class="controls icon-row">
+      <button id="playBtn" class="icon-btn" title="播放" aria-label="播放">▶</button>
+      <button id="replayBtn" class="icon-btn" title="重播" aria-label="重播">↺</button>
+      <button id="pauseBtn" class="icon-btn" title="暫停" aria-label="暫停">⏸</button>
+      <button id="revealBtn" class="icon-btn primary" title="翻牌公布答案" aria-label="翻牌公布答案">🔄</button>
     </div>
 
-    <div class="controls secondary">
-      <button id="nextBtn" class="control-btn" hidden>下一首 ▶</button>
-      <button id="reshuffleBtn" class="ghost-btn">重新洗牌</button>
-      <button id="endGameBtn" class="ghost-btn">結束遊戲</button>
+    <div class="controls icon-row secondary">
+      <button id="nextBtn" class="icon-btn" title="下一首" aria-label="下一首" hidden>⏭</button>
+      <button id="reshuffleBtn" class="icon-btn ghost" title="重新洗牌" aria-label="重新洗牌">🔀</button>
+      <button id="endGameBtn" class="icon-btn ghost" title="結束遊戲" aria-label="結束遊戲">✕</button>
     </div>
 
     <p id="gameStatus" class="status-text"></p>

@@ -52,6 +52,7 @@
 
   const progressCounter = el("progressCounter");
   const reloadPlaylistBtn = el("reloadPlaylistBtn");
+  const gestureToggleBtn = el("gestureToggleBtn");
   const flipCard = el("flipCard");
   const vinyl = el("vinyl");
   const revealCover = el("revealCover");
@@ -376,9 +377,8 @@
     }
   }
 
-  function armAutoPauseTimer() {
+  function scheduleAutoPause(seconds) {
     clearAutoPauseTimer();
-    const seconds = currentDurationSec();
     if (seconds > 0) {
       autoPauseTimer = setTimeout(() => {
         autoPauseTimer = null;
@@ -386,6 +386,10 @@
         vinyl.classList.remove("spinning");
       }, seconds * 1000);
     }
+  }
+
+  function armAutoPauseTimer() {
+    scheduleAutoPause(currentDurationSec());
   }
 
   function updateProgressCounter() {
@@ -399,6 +403,7 @@
     nextBtn.hidden = true;
     revealBtn.disabled = false;
     playBtn.disabled = false;
+    facingState = "up";
   }
 
   function drawNextTrack() {
@@ -448,9 +453,10 @@
     vinyl.classList.remove("spinning");
   }
 
+  const REVEAL_AUTO_PAUSE_SEC = 3;
+
   function onReveal() {
     if (!currentTrack) return;
-    clearAutoPauseTimer();
     const t = currentTrack;
     revealCover.src = t.album?.images?.[0]?.url || "";
     revealTitle.textContent = t.name;
@@ -460,11 +466,13 @@
     flipCard.classList.add("revealed");
     revealBtn.disabled = true;
     nextBtn.hidden = false;
+    scheduleAutoPause(REVEAL_AUTO_PAUSE_SEC);
   }
 
   function onNext() {
     clearAutoPauseTimer();
     drawNextTrack();
+    onPlay();
   }
 
   function onReshuffle() {
@@ -494,6 +502,64 @@
     gameSection.hidden = true;
     playlistSection.hidden = false;
   }
+
+  // ---------- Phone flip gesture (face-down = play, face-up = reveal) ----------
+  // Only fires while the card is still hidden; once revealed, next/replay go back to buttons.
+  const FLIP_DOWN_THRESHOLD = 120;
+  const FLIP_UP_THRESHOLD = 60;
+  let facingState = "up";
+  let gestureEnabled = false;
+
+  function handleOrientation(event) {
+    if (event.beta === null || event.beta === undefined) return;
+    const tilt = Math.abs(event.beta);
+    if (facingState !== "down" && tilt > FLIP_DOWN_THRESHOLD) {
+      facingState = "down";
+      if (currentTrack && !flipCard.classList.contains("revealed")) onPlay();
+    } else if (facingState !== "up" && tilt < FLIP_UP_THRESHOLD) {
+      facingState = "up";
+      if (currentTrack && !flipCard.classList.contains("revealed")) onReveal();
+    }
+  }
+
+  async function enableFlipGesture() {
+    if (typeof DeviceOrientationEvent === "undefined") {
+      setStatus("這個裝置不支援翻面手勢。");
+      return;
+    }
+    if (typeof DeviceOrientationEvent.requestPermission === "function") {
+      try {
+        const result = await DeviceOrientationEvent.requestPermission();
+        if (result !== "granted") {
+          setStatus("未取得動作與方向存取權限，翻面手勢無法使用。");
+          return;
+        }
+      } catch (e) {
+        setStatus("無法啟用翻面手勢：" + e.message);
+        return;
+      }
+    }
+    window.addEventListener("deviceorientation", handleOrientation);
+    gestureEnabled = true;
+    facingState = "up";
+    gestureToggleBtn.classList.add("active");
+    gestureToggleBtn.title = "翻面手勢已啟用（再按一次關閉）";
+  }
+
+  function disableFlipGesture() {
+    window.removeEventListener("deviceorientation", handleOrientation);
+    gestureEnabled = false;
+    gestureToggleBtn.classList.remove("active");
+    gestureToggleBtn.title = "啟用手機翻面手勢";
+  }
+
+  gestureToggleBtn.addEventListener("click", () => {
+    if (gestureEnabled) {
+      disableFlipGesture();
+    } else {
+      enableFlipGesture();
+    }
+  });
 
   // ---------- UI wiring ----------
   function setStatus(msg) {
