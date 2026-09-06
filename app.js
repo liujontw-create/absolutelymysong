@@ -9,12 +9,12 @@
   ].join(" ");
 
   const LS_KEYS = {
-    clientId: "hitster.clientId",
-    codeVerifier: "hitster.codeVerifier",
-    accessToken: "hitster.accessToken",
-    refreshToken: "hitster.refreshToken",
-    expiresAt: "hitster.expiresAt",
-    grantedScope: "hitster.grantedScope",
+    clientId: "ams.clientId",
+    codeVerifier: "ams.codeVerifier",
+    accessToken: "ams.accessToken",
+    refreshToken: "ams.refreshToken",
+    expiresAt: "ams.expiresAt",
+    grantedScope: "ams.grantedScope",
   };
 
   const redirectUri = window.location.origin + window.location.pathname;
