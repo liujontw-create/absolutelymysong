@@ -48,6 +48,14 @@
   const deviceError = el("deviceError");
   const modeSelect = el("modeSelect");
   const durationSelect = el("durationSelect");
+  const advancedOptions = el("advancedOptions");
+  const yearFrom = el("yearFrom");
+  const yearTo = el("yearTo");
+  const artistSearch = el("artistSearch");
+  const selectAllArtistsBtn = el("selectAllArtistsBtn");
+  const deselectAllArtistsBtn = el("deselectAllArtistsBtn");
+  const artistChecklist = el("artistChecklist");
+  const filterCount = el("filterCount");
   const startGameBtn = el("startGameBtn");
 
   const progressCounter = el("progressCounter");
@@ -338,10 +346,105 @@
 
   // ---------- Game state ----------
   let allTracks = [];
+  let activeTracks = [];
   let queue = [];
   let currentTrack = null;
   let currentStartMs = 0;
   let currentPlaylistId = null;
+
+  // ---------- Advanced filters (year range + artist checklist) ----------
+  let artistCheckedMap = new Map();
+
+  function trackYear(track) {
+    const y = track.album?.release_date ? parseInt(track.album.release_date.slice(0, 4), 10) : null;
+    return Number.isNaN(y) ? null : y;
+  }
+
+  function initYearRangeIfEmpty(tracks) {
+    let min = null;
+    let max = null;
+    for (const t of tracks) {
+      const y = trackYear(t);
+      if (y === null) continue;
+      if (min === null || y < min) min = y;
+      if (max === null || y > max) max = y;
+    }
+    if (min === null) return;
+    yearFrom.placeholder = String(min);
+    yearTo.placeholder = String(max);
+    if (!yearFrom.value) yearFrom.value = min;
+    if (!yearTo.value) yearTo.value = max;
+  }
+
+  function renderArtistChecklist(tracks) {
+    const uniqueArtists = new Map();
+    for (const t of tracks) {
+      for (const a of t.artists || []) {
+        if (a.id && !uniqueArtists.has(a.id)) uniqueArtists.set(a.id, a.name);
+      }
+    }
+    const nextMap = new Map();
+    for (const id of uniqueArtists.keys()) {
+      nextMap.set(id, artistCheckedMap.has(id) ? artistCheckedMap.get(id) : true);
+    }
+    artistCheckedMap = nextMap;
+
+    const sorted = Array.from(uniqueArtists.entries()).sort((a, b) => a[1].localeCompare(b[1], "zh-Hant"));
+    artistChecklist.innerHTML = "";
+    for (const [id, name] of sorted) {
+      const label = document.createElement("label");
+      label.className = "artist-item";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = artistCheckedMap.get(id);
+      cb.addEventListener("change", () => {
+        artistCheckedMap.set(id, cb.checked);
+        updateFilterCount();
+      });
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(" " + name));
+      artistChecklist.appendChild(label);
+    }
+    updateFilterCount();
+  }
+
+  function setAllArtists(checked) {
+    artistChecklist.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+      cb.checked = checked;
+    });
+    for (const id of artistCheckedMap.keys()) artistCheckedMap.set(id, checked);
+    updateFilterCount();
+  }
+
+  selectAllArtistsBtn.addEventListener("click", () => setAllArtists(true));
+  deselectAllArtistsBtn.addEventListener("click", () => setAllArtists(false));
+
+  artistSearch.addEventListener("input", () => {
+    const q = artistSearch.value.trim().toLowerCase();
+    artistChecklist.querySelectorAll(".artist-item").forEach((label) => {
+      const name = label.textContent.trim().toLowerCase();
+      label.hidden = q.length > 0 && !name.includes(q);
+    });
+  });
+
+  yearFrom.addEventListener("input", updateFilterCount);
+  yearTo.addEventListener("input", updateFilterCount);
+
+  function getFilteredTracks() {
+    const yFrom = yearFrom.value ? parseInt(yearFrom.value, 10) : null;
+    const yTo = yearTo.value ? parseInt(yearTo.value, 10) : null;
+    return allTracks.filter((t) => {
+      const y = trackYear(t);
+      if (yFrom !== null && (y === null || y < yFrom)) return false;
+      if (yTo !== null && (y === null || y > yTo)) return false;
+      const artists = t.artists || [];
+      return artists.length === 0 || artists.some((a) => artistCheckedMap.get(a.id) !== false);
+    });
+  }
+
+  function updateFilterCount() {
+    filterCount.textContent = `符合條件：${getFilteredTracks().length} / ${allTracks.length} 首`;
+  }
 
   function shuffle(arr) {
     const a = arr.slice();
@@ -393,8 +496,8 @@
   }
 
   function updateProgressCounter() {
-    const played = allTracks.length - queue.length;
-    progressCounter.textContent = `已播放 ${played} / 共 ${allTracks.length} 首`;
+    const played = activeTracks.length - queue.length;
+    progressCounter.textContent = `已播放 ${played} / 共 ${activeTracks.length} 首`;
   }
 
   function resetCardToHidden() {
@@ -474,7 +577,13 @@
   }
 
   function onReshuffle() {
-    queue = shuffle(allTracks);
+    const filtered = getFilteredTracks();
+    if (filtered.length === 0) {
+      setStatus("篩選條件太嚴格，沒有符合的歌曲，請回到上一頁調整年份或歌手篩選。");
+      return;
+    }
+    activeTracks = filtered;
+    queue = shuffle(activeTracks);
     playBtn.disabled = false;
     replayBtn.disabled = false;
     pauseBtn.disabled = false;
@@ -486,7 +595,14 @@
     setStatus("重新載入歌單中…");
     try {
       allTracks = await fetchAllTracks(currentPlaylistId);
-      queue = shuffle(allTracks);
+      renderArtistChecklist(allTracks);
+      const filtered = getFilteredTracks();
+      if (filtered.length === 0) {
+        setStatus("歌單已更新，但目前的篩選條件沒有符合的歌曲，請調整年份或歌手篩選。");
+        return;
+      }
+      activeTracks = filtered;
+      queue = shuffle(activeTracks);
       updateProgressCounter();
       setStatus("歌單已更新，共 " + allTracks.length + " 首歌。");
     } catch (e) {
@@ -604,6 +720,9 @@
       deviceSelect.hidden = false;
       modeSelect.hidden = false;
       durationSelect.hidden = false;
+      initYearRangeIfEmpty(tracks);
+      renderArtistChecklist(tracks);
+      advancedOptions.hidden = false;
       tracksLoaded = true;
       maybeEnableStart();
       if (!selectedDeviceId) loadDevices();
@@ -623,7 +742,13 @@
   refreshDevicesBtn.addEventListener("click", loadDevices);
 
   startGameBtn.addEventListener("click", () => {
-    queue = shuffle(allTracks);
+    const filtered = getFilteredTracks();
+    if (filtered.length === 0) {
+      showError(playlistError, "篩選條件太嚴格，沒有符合的歌曲，請調整年份或歌手篩選。");
+      return;
+    }
+    activeTracks = filtered;
+    queue = shuffle(activeTracks);
     playlistSection.hidden = true;
     gameSection.hidden = false;
     drawNextTrack();

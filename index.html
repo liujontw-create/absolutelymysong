@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>絕對歌感 AbsolutelyMySong</title>
-<link rel="stylesheet" href="style.css?v=2">
+<link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -96,6 +96,31 @@
       </div>
     </div>
 
+    <details id="advancedOptions" class="advanced-options" hidden>
+      <summary>進階選項</summary>
+
+      <div class="field-row">
+        <label>年份範圍</label>
+        <div class="year-range-row">
+          <input type="number" id="yearFrom" inputmode="numeric">
+          <span>至</span>
+          <input type="number" id="yearTo" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <label>歌手篩選</label>
+        <input type="text" id="artistSearch" placeholder="搜尋歌手…">
+        <div class="artist-select-actions">
+          <button id="selectAllArtistsBtn" type="button" class="ghost-btn small">全選</button>
+          <button id="deselectAllArtistsBtn" type="button" class="ghost-btn small">取消全選</button>
+        </div>
+        <div id="artistChecklist" class="artist-checklist"></div>
+      </div>
+
+      <p id="filterCount" class="hint"></p>
+    </details>
+
     <button id="startGameBtn" class="primary-btn" hidden>開始遊戲</button>
   </section>
 
@@ -148,6 +173,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
