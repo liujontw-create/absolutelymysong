@@ -1,5 +1,7 @@
 # 絕對歌感 AbsolutelyMySong
 
+🔗 已部署：https://liujontw-create.github.io/absolutelymysong/
+
 純前端網頁，串接指定的 Spotify 歌單，隨機播放歌曲讓玩家猜「這是誰的哪首歌」。
 可選擇「從開頭播放」或「隨機精華片段」，也能選播放長度，播放時不顯示歌名／歌手，按下「翻牌」才公布答案。
 
