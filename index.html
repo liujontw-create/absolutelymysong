@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hitster 猜歌遊戲</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <header class="topbar">
+    <h1>🎵 Hitster 猜歌</h1>
+    <button id="logoutBtn" class="ghost-btn" hidden>登出</button>
+  </header>
+
+  <!-- Step 1: Spotify App 設定 (Client ID) -->
+  <section id="setupSection" class="panel">
+    <h2>步驟 1・設定 Spotify App</h2>
+    <p class="hint">
+      這個遊戲需要你自己申請一個免費的 Spotify App 才能運作。
+      到 <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">Spotify Developer Dashboard</a>
+      建立一個 App，並把下面這個 Redirect URI 完整複製貼到該 App 設定的
+      <strong>Redirect URIs</strong> 欄位中（要一字不差，包含結尾斜線）。
+    </p>
+    <div class="field-row">
+      <label>Redirect URI（貼到 Spotify App 設定）</label>
+      <div class="copy-row">
+        <input id="redirectUriDisplay" type="text" readonly>
+        <button id="copyRedirectBtn" class="ghost-btn">複製</button>
+      </div>
+    </div>
+    <div class="field-row">
+      <label for="clientIdInput">Client ID</label>
+      <input id="clientIdInput" type="text" placeholder="貼上你的 Spotify App Client ID">
+    </div>
+    <button id="connectBtn" class="primary-btn">連接 Spotify</button>
+    <p id="setupError" class="error-text" hidden></p>
+  </section>
+
+  <!-- Step 2: 歌單設定 -->
+  <section id="playlistSection" class="panel" hidden>
+    <h2>貼上歌單連結</h2>
+    <p class="hint">玩家可以自行在 Spotify App 裡把歌加進這個歌單。貼上連結後會自動載入。</p>
+    <div class="field-row">
+      <input id="playlistInput" type="text" inputmode="url" placeholder="https://open.spotify.com/playlist/xxxxxxxx">
+    </div>
+    <p id="playlistError" class="error-text" hidden></p>
+    <p id="playlistLoading" class="hint" hidden>載入中…</p>
+
+    <div id="playlistInfo" class="playlist-info" hidden>
+      <img id="playlistCover" alt="">
+      <div>
+        <div id="playlistName" class="playlist-name"></div>
+        <div id="playlistCount" class="playlist-count"></div>
+      </div>
+    </div>
+
+    <div id="deviceSelect" class="field-row" hidden>
+      <label>播放裝置<span class="hint-inline">（請先在該裝置打開 Spotify App）</span></label>
+      <div class="copy-row">
+        <select id="deviceDropdown"></select>
+        <button id="refreshDevicesBtn" class="ghost-btn small">重新整理</button>
+      </div>
+      <p id="deviceError" class="error-text" hidden></p>
+    </div>
+
+    <div id="modeSelect" class="mode-select" hidden>
+      <label>播放方式</label>
+      <div class="mode-options">
+        <label class="mode-option">
+          <input type="radio" name="playMode" value="intro" checked>
+          從開頭播放
+        </label>
+        <label class="mode-option">
+          <input type="radio" name="playMode" value="highlight">
+          隨機精華片段
+        </label>
+      </div>
+    </div>
+
+    <div id="durationSelect" class="mode-select" hidden>
+      <label>播放長度</label>
+      <div class="mode-options duration-options">
+        <label class="mode-option"><input type="radio" name="playDuration" value="5">5 秒</label>
+        <label class="mode-option"><input type="radio" name="playDuration" value="10">10 秒</label>
+        <label class="mode-option"><input type="radio" name="playDuration" value="15" checked>15 秒</label>
+        <label class="mode-option"><input type="radio" name="playDuration" value="30">30 秒</label>
+        <label class="mode-option"><input type="radio" name="playDuration" value="0">不限</label>
+      </div>
+    </div>
+
+    <button id="startGameBtn" class="primary-btn" hidden>開始遊戲</button>
+  </section>
+
+  <!-- Step 3: 遊戲畫面 -->
+  <section id="gameSection" class="panel" hidden>
+    <div class="game-topline">
+      <span id="progressCounter" class="progress-counter"></span>
+      <button id="reloadPlaylistBtn" class="ghost-btn small">重新整理歌單</button>
+    </div>
+
+    <div class="card-stage">
+      <div id="flipCard" class="flip-card">
+        <div class="flip-card-inner">
+
+          <div class="flip-card-front">
+            <div id="vinyl" class="vinyl"></div>
+            <div class="hidden-hint">神秘歌曲播放中…</div>
+          </div>
+
+          <div class="flip-card-back">
+            <img id="revealCover" class="reveal-cover" alt="">
+            <div id="revealYear" class="reveal-year"></div>
+            <div id="revealTitle" class="reveal-title"></div>
+            <div id="revealArtist" class="reveal-artist"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="playBtn" class="control-btn">▶ 播放</button>
+      <button id="replayBtn" class="control-btn">↺ 重播</button>
+      <button id="pauseBtn" class="control-btn">⏸ 暫停</button>
+      <button id="revealBtn" class="control-btn primary">🔄 翻牌公布答案</button>
+    </div>
+
+    <div class="controls secondary">
+      <button id="nextBtn" class="control-btn" hidden>下一首 ▶</button>
+      <button id="reshuffleBtn" class="ghost-btn">重新洗牌</button>
+      <button id="endGameBtn" class="ghost-btn">結束遊戲</button>
+    </div>
+
+    <p id="gameStatus" class="status-text"></p>
+  </section>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

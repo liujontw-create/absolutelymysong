@@ -1,0 +1,370 @@
+:root {
+  --bg: #121212;
+  --panel: #181818;
+  --panel-2: #202020;
+  --green: #1db954;
+  --green-dark: #169c46;
+  --text: #ffffff;
+  --text-dim: #b3b3b3;
+  --danger: #f15e5e;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, "Segoe UI", "Noto Sans TC", Roboto, Arial, sans-serif;
+}
+
+#app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 60px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.topbar h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.panel {
+  background: var(--panel);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.hint {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.hint a {
+  color: var(--green);
+}
+
+.field-row {
+  margin: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-row label {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+input[type="text"] {
+  background: var(--panel-2);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+input[type="text"]:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.copy-row {
+  display: flex;
+  gap: 8px;
+}
+
+.copy-row input {
+  flex: 1;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.primary-btn {
+  background: var(--green);
+  color: #000;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  width: 100%;
+  margin-top: 8px;
+  transition: background 0.15s;
+}
+
+.primary-btn:hover { background: var(--green-dark); }
+.primary-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
+
+.ghost-btn {
+  background: transparent;
+  border: 1px solid #444;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+
+.ghost-btn:hover { border-color: var(--text-dim); }
+.ghost-btn.small { padding: 6px 12px; font-size: 0.8rem; }
+
+.error-text {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin-top: 10px;
+}
+
+.playlist-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.playlist-info img {
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #333;
+}
+
+.playlist-name {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.playlist-count {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+.mode-select {
+  margin-top: 18px;
+}
+
+.mode-select > label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.mode-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mode-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  background: var(--panel-2);
+  padding: 10px 14px;
+  border-radius: 8px;
+  flex: 1;
+  min-width: max-content;
+  cursor: pointer;
+}
+
+.duration-options .mode-option {
+  flex: 0 1 auto;
+}
+
+.hint-inline {
+  font-weight: 400;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+}
+
+select {
+  background: var(--panel-2);
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 0.95rem;
+  flex: 1;
+}
+
+select:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.game-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.progress-counter {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.card-stage {
+  display: flex;
+  justify-content: center;
+  perspective: 1200px;
+  margin: 20px 0;
+}
+
+.flip-card {
+  width: 260px;
+  height: 260px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flip-card.revealed .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 16px;
+  text-align: center;
+}
+
+.flip-card-front {
+  background: radial-gradient(circle at 30% 30%, #2a2a2a, #101010);
+  border: 2px solid #2a2a2a;
+}
+
+.flip-card-back {
+  background: var(--panel-2);
+  border: 2px solid var(--green);
+  transform: rotateY(180deg);
+}
+
+.vinyl {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, #111 0 8%, transparent 9%),
+    repeating-radial-gradient(circle, #2b2b2b 0 4px, #1a1a1a 4px 8px);
+  border: 3px solid #333;
+}
+
+.vinyl.spinning {
+  animation: spin 2.4s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.hidden-hint {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.reveal-cover {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #333;
+}
+
+.reveal-year {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.reveal-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.reveal-artist {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.controls.secondary {
+  margin-top: 12px;
+}
+
+.control-btn {
+  background: var(--panel-2);
+  border: 1px solid #333;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+}
+
+.control-btn:hover { border-color: var(--green); }
+.control-btn.primary {
+  background: var(--green);
+  color: #000;
+  border: none;
+  font-weight: 700;
+}
+.control-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.status-text {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  min-height: 1.2em;
+  margin-top: 14px;
+}
+
+@media (max-width: 420px) {
+  .flip-card { width: 220px; height: 220px; }
+}
