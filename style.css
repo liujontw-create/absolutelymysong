@@ -13,6 +13,11 @@
 
 * { box-sizing: border-box; }
 
+/* Any class below that sets its own `display` would otherwise beat the
+   browser's default [hidden]{display:none}, since author rules win over the
+   UA stylesheet regardless of specificity. This guarantees hidden always wins. */
+[hidden] { display: none !important; }
+
 html, body {
   margin: 0;
   padding: 0;
@@ -55,6 +60,138 @@ html, body {
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--text);
+}
+
+.landing {
+  perspective: 1200px;
+}
+
+.landing-hero {
+  text-align: center;
+  padding: 8px 0 4px;
+}
+
+.landing-vinyl {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--green) 0 7%, transparent 7.6%),
+    repeating-radial-gradient(circle, #2b2b2b 0 4px, #1a1a1a 4px 8px);
+  border: 3px solid #333;
+}
+
+.landing-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.landing-title span {
+  display: block;
+  font-size: 0.55em;
+  font-weight: 600;
+  color: var(--green);
+  margin-top: 4px;
+}
+
+.landing-tagline {
+  margin: 14px auto 0;
+  max-width: 40ch;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.landing-tech {
+  margin-top: 28px;
+  background: var(--panel-2);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+
+.landing-tech h3 {
+  margin: 0 0 10px;
+  font-size: 0.95rem;
+}
+
+.landing-tech ul {
+  margin: 0;
+  padding-left: 1.1em;
+  color: var(--text-dim);
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.landing-tech ul strong {
+  color: var(--text);
+}
+
+#landingStartBtn {
+  margin-top: 20px;
+}
+
+.rules-section {
+  margin-top: 36px;
+  transform-origin: bottom center;
+  transform: rotateX(80deg);
+  opacity: 0;
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease-out;
+}
+
+.rules-section.unfolded {
+  transform: rotateX(0deg);
+  opacity: 1;
+}
+
+.rules-section h3 {
+  font-size: 0.95rem;
+  margin: 0 0 14px;
+  text-align: center;
+}
+
+.rules-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.rule-card {
+  background: var(--panel-2);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+.rule-card h4 {
+  margin: 0 0 10px;
+  font-size: 0.9rem;
+  color: var(--green);
+}
+
+.rule-card ul {
+  margin: 0;
+  padding-left: 1.1em;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.55;
+}
+
+.rules-disclaimer {
+  margin: 16px 0 0;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+}
+
+@media (max-width: 520px) {
+  .rules-columns {
+    grid-template-columns: 1fr;
+  }
 }
 
 .hint {
@@ -131,6 +268,13 @@ button {
   border-radius: 999px;
   padding: 8px 16px;
   font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ghost-btn svg {
+  flex: none;
 }
 
 .ghost-btn:hover { border-color: var(--text-dim); }
@@ -357,15 +501,24 @@ select:focus {
 
 .game-topline {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
-  gap: 12px;
+  gap: 10px 12px;
 }
 
 .topline-actions {
   display: flex;
   gap: 8px;
+  flex: none;
+  white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+  .game-topline .ghost-btn.small span {
+    display: none;
+  }
 }
 
 .ghost-btn.active {
@@ -398,7 +551,7 @@ select:focus {
 }
 
 .flip-card.revealed .flip-card-inner {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) scale(1.05);
 }
 
 .flip-card-front, .flip-card-back {
@@ -526,6 +679,57 @@ select:focus {
   font-size: 1.05rem;
   background: transparent;
   border-color: #444;
+}
+
+.icon-btn svg {
+  display: block;
+}
+
+.pill-btn {
+  background: var(--panel-2);
+  border: 1px solid #333;
+  color: var(--text);
+  border-radius: 999px;
+  padding: 0 18px;
+  height: 44px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pill-btn:hover { border-color: var(--green); }
+.pill-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.timers {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.session-timer {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.round-timer {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.host-peek {
+  color: var(--green);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  cursor: pointer;
 }
 
 .status-text {

@@ -22,6 +22,9 @@
   // ---------- DOM ----------
   const el = (id) => document.getElementById(id);
 
+  const landingSection = el("landingSection");
+  const landingStartBtn = el("landingStartBtn");
+  const rulesSection = el("rulesSection");
   const setupSection = el("setupSection");
   const playlistSection = el("playlistSection");
   const gameSection = el("gameSection");
@@ -59,6 +62,10 @@
   const startGameBtn = el("startGameBtn");
 
   const progressCounter = el("progressCounter");
+  const sessionTimer = el("sessionTimer");
+  const roundTimer = el("roundTimer");
+  const hostPeek = el("hostPeek");
+  const quizmasterModeToggle = el("quizmasterModeToggle");
   const reloadPlaylistBtn = el("reloadPlaylistBtn");
   const gestureToggleBtn = el("gestureToggleBtn");
   const flipCard = el("flipCard");
@@ -71,6 +78,8 @@
   const replayBtn = el("replayBtn");
   const pauseBtn = el("pauseBtn");
   const revealBtn = el("revealBtn");
+  const extendBtn = el("extendBtn");
+  const finishBtn = el("finishBtn");
   const nextBtn = el("nextBtn");
   const reshuffleBtn = el("reshuffleBtn");
   const endGameBtn = el("endGameBtn");
@@ -259,6 +268,9 @@
     let url = `/playlists/${playlistId}/items?limit=100`;
     while (url) {
       const res = await spotifyFetch(url);
+      if (res.status === 403) {
+        throw new Error("這個歌單讀不到完整曲目——Spotify 規定只能讀取你自己擁有或協作的歌單。請改用你自己建立的歌單，或請歌單擁有者把它設為協作歌單並邀請你加入。");
+      }
       if (!res.ok) throw new Error(`讀取歌單曲目失敗：${await spotifyErrorMessage(res)}`);
       const json = await res.json();
       for (const entry of json.items) {
@@ -487,6 +499,8 @@
         autoPauseTimer = null;
         pausePlayback();
         vinyl.classList.remove("spinning");
+        stopRoundTimer();
+        stopSessionTimer();
       }, seconds * 1000);
     }
   }
@@ -494,6 +508,92 @@
   function armAutoPauseTimer() {
     scheduleAutoPause(currentDurationSec());
   }
+
+  // ---------- Timers (count only while actually playing) ----------
+  function formatSeconds(ms, decimals) {
+    return (ms / 1000).toFixed(decimals);
+  }
+
+  let roundElapsedMs = 0;
+  let roundRunning = false;
+  let roundStartedAt = 0;
+  let roundInterval = null;
+
+  function renderRoundTimer() {
+    const total = roundElapsedMs + (roundRunning ? Date.now() - roundStartedAt : 0);
+    roundTimer.textContent = formatSeconds(total, 1) + "s";
+  }
+
+  function startRoundTimer() {
+    if (roundRunning) return;
+    roundRunning = true;
+    roundStartedAt = Date.now();
+    roundInterval = setInterval(renderRoundTimer, 100);
+  }
+
+  function stopRoundTimer() {
+    if (!roundRunning) return;
+    roundElapsedMs += Date.now() - roundStartedAt;
+    roundRunning = false;
+    clearInterval(roundInterval);
+    roundInterval = null;
+    renderRoundTimer();
+  }
+
+  function resetRoundTimer() {
+    stopRoundTimer();
+    roundElapsedMs = 0;
+    renderRoundTimer();
+  }
+
+  let sessionElapsedMs = 0;
+  let sessionRunning = false;
+  let sessionStartedAt = 0;
+  let sessionInterval = null;
+
+  function renderSessionTimer() {
+    const total = sessionElapsedMs + (sessionRunning ? Date.now() - sessionStartedAt : 0);
+    const totalSec = Math.floor(total / 1000);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    sessionTimer.textContent = `${m}:${String(s).padStart(2, "0")}`;
+  }
+
+  function startSessionTimer() {
+    if (sessionRunning) return;
+    sessionRunning = true;
+    sessionStartedAt = Date.now();
+    sessionInterval = setInterval(renderSessionTimer, 500);
+  }
+
+  function stopSessionTimer() {
+    if (!sessionRunning) return;
+    sessionElapsedMs += Date.now() - sessionStartedAt;
+    sessionRunning = false;
+    clearInterval(sessionInterval);
+    sessionInterval = null;
+    renderSessionTimer();
+  }
+
+  function resetSessionTimer() {
+    stopSessionTimer();
+    sessionElapsedMs = 0;
+    renderSessionTimer();
+  }
+
+  // ---------- Quizmaster peek (advanced option, off by default) ----------
+  function updateHostPeek() {
+    if (quizmasterModeToggle.checked && currentTrack) {
+      const artists = (currentTrack.artists || []).map((a) => a.name).join(", ");
+      hostPeek.textContent = `${artists} — ${currentTrack.name}`;
+      hostPeek.hidden = false;
+    } else {
+      hostPeek.hidden = true;
+      hostPeek.textContent = "";
+    }
+  }
+
+  quizmasterModeToggle.addEventListener("change", updateHostPeek);
 
   function updateProgressCounter() {
     const played = activeTracks.length - queue.length;
@@ -507,6 +607,7 @@
     revealBtn.disabled = false;
     playBtn.disabled = false;
     facingState = "up";
+    resetRoundTimer();
   }
 
   function drawNextTrack() {
@@ -518,6 +619,7 @@
       pauseBtn.disabled = true;
       revealBtn.disabled = true;
       updateProgressCounter();
+      updateHostPeek();
       return;
     }
     currentTrack = queue.pop();
@@ -527,6 +629,7 @@
     replayBtn.disabled = false;
     pauseBtn.disabled = false;
     updateProgressCounter();
+    updateHostPeek();
     setStatus("按「播放」開始猜歌！");
   }
 
@@ -538,6 +641,8 @@
     if (ok) {
       vinyl.classList.add("spinning");
       armAutoPauseTimer();
+      startRoundTimer();
+      startSessionTimer();
     }
   }
 
@@ -547,6 +652,8 @@
     if (ok) {
       vinyl.classList.add("spinning");
       armAutoPauseTimer();
+      startRoundTimer();
+      startSessionTimer();
     }
   }
 
@@ -554,6 +661,8 @@
     clearAutoPauseTimer();
     await pausePlayback();
     vinyl.classList.remove("spinning");
+    stopRoundTimer();
+    stopSessionTimer();
   }
 
   function onReveal() {
@@ -567,13 +676,24 @@
     flipCard.classList.add("revealed");
     revealBtn.disabled = true;
     nextBtn.hidden = false;
+    stopRoundTimer();
   }
 
   async function onNext() {
     clearAutoPauseTimer();
     await pausePlayback();
     vinyl.classList.remove("spinning");
+    stopRoundTimer();
+    stopSessionTimer();
     drawNextTrack();
+  }
+
+  function onExtend() {
+    if (autoPauseTimer) scheduleAutoPause(10);
+  }
+
+  function onFinishPlaying() {
+    clearAutoPauseTimer();
   }
 
   function onReshuffle() {
@@ -613,6 +733,8 @@
   function onEndGame() {
     clearAutoPauseTimer();
     pausePlayback();
+    stopRoundTimer();
+    stopSessionTimer();
     gameSection.hidden = true;
     playlistSection.hidden = false;
   }
@@ -749,6 +871,7 @@
     }
     activeTracks = filtered;
     queue = shuffle(activeTracks);
+    resetSessionTimer();
     playlistSection.hidden = true;
     gameSection.hidden = false;
     drawNextTrack();
@@ -758,10 +881,43 @@
   replayBtn.addEventListener("click", onReplay);
   pauseBtn.addEventListener("click", onPause);
   revealBtn.addEventListener("click", onReveal);
+  extendBtn.addEventListener("click", onExtend);
+  finishBtn.addEventListener("click", onFinishPlaying);
   nextBtn.addEventListener("click", onNext);
   reshuffleBtn.addEventListener("click", onReshuffle);
   endGameBtn.addEventListener("click", onEndGame);
   reloadPlaylistBtn.addEventListener("click", onReloadPlaylist);
+
+  // ---------- Landing page ----------
+  landingStartBtn.addEventListener("click", () => {
+    landingSection.hidden = true;
+    if (isLoggedIn()) {
+      playlistSection.hidden = false;
+      loadDevices();
+    } else {
+      setupSection.hidden = false;
+    }
+  });
+
+  // Rules unfold into view once the visitor scrolls to them, instead of a button.
+  function initRulesReveal() {
+    if (typeof IntersectionObserver === "undefined") {
+      rulesSection.classList.add("unfolded");
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            rulesSection.classList.add("unfolded");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(rulesSection);
+  }
 
   // ---------- Boot ----------
   async function boot() {
@@ -780,15 +936,18 @@
     }
 
     renderClientIdQr();
+    initRulesReveal();
 
     if (authError) {
       showError(setupError, "Spotify 授權失敗：" + authError);
       window.history.replaceState({}, "", redirectUri);
     }
 
+    let returningFromAuth = false;
     if (code) {
       try {
         await exchangeCodeForToken(code);
+        returningFromAuth = true;
         window.history.replaceState({}, "", redirectUri);
       } catch (e) {
         showError(setupError, e.message);
@@ -797,9 +956,13 @@
     }
 
     if (isLoggedIn()) {
-      setupSection.hidden = true;
-      playlistSection.hidden = false;
       logoutBtn.hidden = false;
+    }
+
+    if (returningFromAuth && isLoggedIn()) {
+      // Coming straight back from Spotify's consent screen — skip the landing page.
+      landingSection.hidden = true;
+      playlistSection.hidden = false;
       loadDevices();
     }
   }
