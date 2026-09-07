@@ -60,6 +60,7 @@
   const deselectAllArtistsBtn = el("deselectAllArtistsBtn");
   const artistChecklist = el("artistChecklist");
   const filterCount = el("filterCount");
+  const teamModeToggle = el("teamModeToggle");
   const startGameBtn = el("startGameBtn");
 
   const progressCounter = el("progressCounter");
@@ -67,6 +68,11 @@
   const roundTimer = el("roundTimer");
   const hostPeek = el("hostPeek");
   const quizmasterModeToggle = el("quizmasterModeToggle");
+  const scoreboard = el("scoreboard");
+  const teamAScoreBtn = el("teamAScoreBtn");
+  const teamAResetBtn = el("teamAResetBtn");
+  const teamBScoreBtn = el("teamBScoreBtn");
+  const teamBResetBtn = el("teamBResetBtn");
   const reloadPlaylistBtn = el("reloadPlaylistBtn");
   const gestureToggleBtn = el("gestureToggleBtn");
   const flipCard = el("flipCard");
@@ -584,7 +590,7 @@
 
   // ---------- Quizmaster peek (advanced option, off by default) ----------
   function updateHostPeek() {
-    if (quizmasterModeToggle.checked && currentTrack) {
+    if ((quizmasterModeToggle.checked || teamModeToggle.checked) && currentTrack) {
       const artists = (currentTrack.artists || []).map((a) => a.name).join(", ");
       hostPeek.textContent = `${artists} — ${currentTrack.name}`;
       hostPeek.hidden = false;
@@ -594,7 +600,18 @@
     }
   }
 
+  // ---------- Team scoreboard (small group mode) ----------
+  function setScore(btn, value) {
+    btn.textContent = String(Math.max(0, value));
+  }
+
+  teamAScoreBtn.addEventListener("click", () => setScore(teamAScoreBtn, Number(teamAScoreBtn.textContent) + 1));
+  teamBScoreBtn.addEventListener("click", () => setScore(teamBScoreBtn, Number(teamBScoreBtn.textContent) + 1));
+  teamAResetBtn.addEventListener("click", () => setScore(teamAScoreBtn, 0));
+  teamBResetBtn.addEventListener("click", () => setScore(teamBScoreBtn, 0));
+
   quizmasterModeToggle.addEventListener("change", updateHostPeek);
+  teamModeToggle.addEventListener("change", updateHostPeek);
 
   function updateProgressCounter() {
     const played = activeTracks.length - queue.length;
@@ -873,6 +890,9 @@
     activeTracks = filtered;
     queue = shuffle(activeTracks);
     resetSessionTimer();
+    scoreboard.hidden = !teamModeToggle.checked;
+    setScore(teamAScoreBtn, 0);
+    setScore(teamBScoreBtn, 0);
     playlistSection.hidden = true;
     gameSection.hidden = false;
     drawNextTrack();

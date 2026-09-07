@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>絕對歌感 AbsolutelyMySong</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -48,7 +48,7 @@
             <li>自由搶答，主持人聽到搶答後按下「暫停」，搶到的人 3 秒內要講出答案</li>
             <li>歌名＋歌手都要講對才算正確；年份不用講，但額外答對年份可加分</li>
             <li>答錯或超時：換下一位繼續搶答</li>
-            <li>沒有主持人時：輪流作答，每題最多 3 次機會（3 位玩家依序各答一次），答錯就換下一位，3 次都沒中就翻牌公布</li>
+            <li><strong>左輪模式（不需主持人）</strong>：由答題者右手邊的玩家操作手機（播放、翻牌），猜題者完全不用碰手機，不怕螢幕通知洩題。可搭配翻面手勢操作（朝下播放、朝上公布），沒有手勢就手動按按鈕</li>
           </ul>
         </div>
         <div class="rule-card">
@@ -176,6 +176,13 @@
           出題者模式（蓋牌時多顯示歌名／歌手給主持人自己看）
         </label>
       </div>
+
+      <div class="field-row">
+        <label class="checkbox-row">
+          <input type="checkbox" id="teamModeToggle">
+          小組模式（顯示兩隊比分板，並自動套用出題者模式）
+        </label>
+      </div>
     </details>
 
     <button id="startGameBtn" class="primary-btn" hidden>開始遊戲</button>
@@ -197,6 +204,18 @@
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
           <span>更新</span>
         </button>
+      </div>
+    </div>
+
+    <div id="scoreboard" class="scoreboard" hidden>
+      <div class="team-score-block">
+        <button id="teamAScoreBtn" class="score-value" type="button" aria-label="隊伍 A 加分">0</button>
+        <button id="teamAResetBtn" class="score-reset" type="button" title="隊伍 A 歸零" aria-label="隊伍 A 歸零">歸零</button>
+      </div>
+      <div class="score-vs">:</div>
+      <div class="team-score-block">
+        <button id="teamBScoreBtn" class="score-value" type="button" aria-label="隊伍 B 加分">0</button>
+        <button id="teamBResetBtn" class="score-reset" type="button" title="隊伍 B 歸零" aria-label="隊伍 B 歸零">歸零</button>
       </div>
     </div>
 
@@ -262,6 +281,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script src="app.js?v=6"></script>
+<script src="app.js?v=7"></script>
 </body>
 </html>
