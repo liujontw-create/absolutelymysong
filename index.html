@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>絕對歌感 AbsolutelyMySong</title>
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chewy&family=Space+Grotesk:wght@600;700&family=Quicksand:wght@500;600;700;800&display=swap">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 
@@ -62,6 +64,18 @@
         </div>
       </div>
       <p class="rules-disclaimer">以上規則僅供參考，大家可以照自己喜歡的方式調整玩法。</p>
+    </div>
+
+    <div id="privacySection" class="rules-section privacy-section">
+      <h3>隱私聲明</h3>
+      <p>
+        這個網頁是純靜態網站，沒有我們自己的伺服器，不會蒐集或上傳任何資料。
+        登入用的 Client ID 與 Token 只存在你瀏覽器的 localStorage 裡。
+        歌單與歌曲資訊即時從 Spotify 官方 API 讀取顯示，不會另外儲存。
+        播放控制走 Spotify Connect：這個網頁只送出「播放／暫停」這類指令給 Spotify 官方伺服器，
+        再由 Spotify 轉發給你選的裝置播放——音樂本身完全不會經過這個網頁，我們看不到、聽不到，也不會記錄。
+        唯一用到的外部資源是一個畫 QR code 用的公開程式庫，沒有任何分析或追蹤工具。
+      </p>
     </div>
   </section>
 
@@ -173,14 +187,14 @@
       <div class="field-row">
         <label class="checkbox-row">
           <input type="checkbox" id="quizmasterModeToggle">
-          出題者模式（蓋牌時多顯示歌名／歌手給主持人自己看）
+          主持人模式（畫面顯示解答）
         </label>
       </div>
 
       <div class="field-row">
         <label class="checkbox-row">
           <input type="checkbox" id="teamModeToggle">
-          小組模式（顯示兩隊比分板，並自動套用出題者模式）
+          小組模式（顯示兩隊比分板，並自動套用主持人模式）
         </label>
       </div>
     </details>
@@ -279,6 +293,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>

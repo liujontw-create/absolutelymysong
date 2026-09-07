@@ -26,6 +26,7 @@
   const landingStartBtn = el("landingStartBtn");
   const scrollCueBtn = el("scrollCueBtn");
   const rulesSection = el("rulesSection");
+  const privacySection = el("privacySection");
   const setupSection = el("setupSection");
   const playlistSection = el("playlistSection");
   const gameSection = el("gameSection");
@@ -597,7 +598,13 @@
 
   // ---------- Quizmaster peek (advanced option, off by default) ----------
   function updateHostPeek() {
-    if ((quizmasterModeToggle.checked || teamModeToggle.checked) && currentTrack) {
+    const hostModeOn = quizmasterModeToggle.checked || teamModeToggle.checked;
+    // The pause button doubles as the "buzz stop" control in host mode, so it
+    // gets enlarged and put in a vivid color regardless of whether a track is
+    // currently loaded.
+    pauseBtn.classList.toggle("host-emphasis", hostModeOn);
+
+    if (hostModeOn && currentTrack) {
       const artists = (currentTrack.artists || []).map((a) => a.name).join(", ");
       hostPeek.textContent = `${artists} — ${currentTrack.name}`;
       hostPeek.hidden = false;
@@ -950,24 +957,23 @@
     rulesSection.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  // Rules unfold into view once the visitor scrolls to them, instead of a button.
-  function initRulesReveal() {
+  // Fold-reveal panels (rules, privacy) unfold as the visitor scrolls to them and
+  // fold back closed if they scroll away, instead of a one-shot reveal.
+  function initFoldReveal(target) {
+    if (!target) return;
     if (typeof IntersectionObserver === "undefined") {
-      rulesSection.classList.add("unfolded");
+      target.classList.add("unfolded");
       return;
     }
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            rulesSection.classList.add("unfolded");
-            observer.unobserve(entry.target);
-          }
+          target.classList.toggle("unfolded", entry.isIntersecting);
         });
       },
       { threshold: 0.15 }
     );
-    observer.observe(rulesSection);
+    observer.observe(target);
   }
 
   // ---------- Boot ----------
@@ -987,7 +993,8 @@
     }
 
     renderClientIdQr();
-    initRulesReveal();
+    initFoldReveal(rulesSection);
+    initFoldReveal(privacySection);
 
     if (authError) {
       showError(setupError, "Spotify 授權失敗：" + authError);
