@@ -6,7 +6,7 @@
 <title>絕對歌感 AbsolutelyMySong</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chewy&family=Space+Grotesk:wght@600;700&family=Quicksand:wght@500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
 
@@ -99,6 +99,18 @@
       <label for="clientIdInput">Client ID</label>
       <input id="clientIdInput" type="text" placeholder="貼上你的 Spotify App Client ID">
     </div>
+
+    <details class="client-id-help">
+      <summary>如何申請 Client ID</summary>
+      <ol>
+        <li>前往 <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener">Spotify Developer Dashboard</a>，用你的 Spotify 帳號登入</li>
+        <li>點右上角「Create app」</li>
+        <li>填寫 App name／App description（隨意填即可），Redirect URI 貼上面複製的那串</li>
+        <li>勾選「Web API」，勾選同意條款後儲存</li>
+        <li>進入剛建立的 App，點「Settings」，最上面就能看到 <strong>Client ID</strong>，複製貼到上面欄位</li>
+      </ol>
+    </details>
+
     <button id="connectBtn" class="primary-btn">連接 Spotify</button>
     <p id="setupError" class="error-text" hidden></p>
 

@@ -391,6 +391,48 @@ button {
   margin-top: 10px;
 }
 
+.client-id-help {
+  margin-top: 14px;
+  font-size: 0.78rem;
+  color: var(--ink-dim);
+}
+
+.client-id-help > summary {
+  cursor: pointer;
+  color: var(--ink-dim);
+  list-style: none;
+}
+
+.client-id-help > summary::-webkit-details-marker {
+  display: none;
+}
+
+.client-id-help > summary::before {
+  content: "▸ ";
+  color: var(--pink);
+}
+
+.client-id-help[open] > summary::before {
+  content: "▾ ";
+}
+
+.client-id-help ol {
+  margin: 10px 0 0;
+  padding-left: 1.2em;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  line-height: 1.6;
+}
+
+.client-id-help a {
+  color: var(--pink);
+}
+
+.client-id-help strong {
+  color: var(--ink);
+}
+
 .qr-section {
   margin-top: 20px;
   text-align: center;
