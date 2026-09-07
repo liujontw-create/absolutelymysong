@@ -365,6 +365,22 @@ button {
 .primary-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 24px rgba(255, 95, 184, 0.5), 0 1px 0 rgba(255, 255, 255, 0.6) inset; }
 .primary-btn:disabled { background: #d8d3ea; color: #a99fc4; box-shadow: none; cursor: not-allowed; transform: none; }
 
+.home-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin: 14px auto 0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff, #eef2ff);
+  border: 1px solid var(--border);
+  color: var(--ink-dim);
+  box-shadow: 0 4px 10px rgba(140, 110, 220, 0.18);
+}
+
+.home-btn:hover { border-color: var(--pink); color: var(--pink); }
+
 .ghost-btn {
   background: linear-gradient(180deg, #ffffff, #eef2ff);
   border: 1px solid var(--border);

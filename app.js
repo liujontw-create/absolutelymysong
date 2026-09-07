@@ -63,6 +63,7 @@
   const filterCount = el("filterCount");
   const teamModeToggle = el("teamModeToggle");
   const startGameBtn = el("startGameBtn");
+  const backToHomeBtn = el("backToHomeBtn");
 
   const progressCounter = el("progressCounter");
   const sessionTimer = el("sessionTimer");
@@ -955,6 +956,15 @@
 
   scrollCueBtn.addEventListener("click", () => {
     rulesSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  // Just a visibility switch back to the landing page — stays logged in, keeps
+  // whatever playlist/device state was already set up.
+  backToHomeBtn.addEventListener("click", () => {
+    setupSection.hidden = true;
+    playlistSection.hidden = true;
+    landingSection.hidden = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
   // Fold-reveal panels (rules, privacy) unfold as the visitor scrolls to them and
