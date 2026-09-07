@@ -133,8 +133,36 @@ html, body {
   margin-top: 20px;
 }
 
+.scroll-cue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 24px auto 0;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.scroll-cue svg {
+  animation: scroll-cue-bounce 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue svg {
+    animation: none;
+  }
+}
+
+@keyframes scroll-cue-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
 .rules-section {
-  margin-top: 36px;
+  margin-top: 20px;
   transform-origin: bottom center;
   transform: rotateX(80deg);
   opacity: 0;

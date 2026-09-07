@@ -24,6 +24,7 @@
 
   const landingSection = el("landingSection");
   const landingStartBtn = el("landingStartBtn");
+  const scrollCueBtn = el("scrollCueBtn");
   const rulesSection = el("rulesSection");
   const setupSection = el("setupSection");
   const playlistSection = el("playlistSection");
@@ -897,6 +898,10 @@
     } else {
       setupSection.hidden = false;
     }
+  });
+
+  scrollCueBtn.addEventListener("click", () => {
+    rulesSection.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   // Rules unfold into view once the visitor scrolls to them, instead of a button.
