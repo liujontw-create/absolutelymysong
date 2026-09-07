@@ -363,6 +363,13 @@
     await spotifyFetch(`/me/player/pause?device_id=${selectedDeviceId}`, { method: "PUT" });
   }
 
+  // Resumes from wherever playback was paused, instead of restarting the snippet.
+  async function resumePlayback() {
+    if (!selectedDeviceId) return false;
+    const res = await spotifyFetch(`/me/player/play?device_id=${selectedDeviceId}`, { method: "PUT" });
+    return res.ok;
+  }
+
   // ---------- Game state ----------
   let allTracks = [];
   let activeTracks = [];
@@ -621,7 +628,7 @@
   function resetCardToHidden() {
     flipCard.classList.remove("revealed");
     vinyl.classList.remove("spinning");
-    nextBtn.hidden = true;
+    nextBtn.disabled = false;
     revealBtn.disabled = false;
     playBtn.disabled = false;
     facingState = "up";
@@ -636,6 +643,7 @@
       replayBtn.disabled = true;
       pauseBtn.disabled = true;
       revealBtn.disabled = true;
+      nextBtn.disabled = true;
       updateProgressCounter();
       updateHostPeek();
       return;
@@ -693,7 +701,6 @@
     revealYear.textContent = year;
     flipCard.classList.add("revealed");
     revealBtn.disabled = true;
-    nextBtn.hidden = false;
     stopRoundTimer();
   }
 
@@ -706,12 +713,31 @@
     drawNextTrack();
   }
 
-  function onExtend() {
-    if (autoPauseTimer) scheduleAutoPause(10);
+  // If paused, resumes from wherever it was paused (does not restart the snippet).
+  // Returns whether playback is now active either way.
+  async function ensurePlaying() {
+    if (vinyl.classList.contains("spinning")) return true;
+    const ok = await resumePlayback();
+    if (ok) {
+      vinyl.classList.add("spinning");
+      startRoundTimer();
+      startSessionTimer();
+      return true;
+    }
+    setStatus("接續播放失敗，請改按「播放」重新開始。");
+    return false;
   }
 
-  function onFinishPlaying() {
+  async function onExtend() {
+    if (!currentTrack) return;
+    if (!(await ensurePlaying())) return;
+    scheduleAutoPause(10);
+  }
+
+  async function onFinishPlaying() {
+    if (!currentTrack) return;
     clearAutoPauseTimer();
+    await ensurePlaying();
   }
 
   function onReshuffle() {
