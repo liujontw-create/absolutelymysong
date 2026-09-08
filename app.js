@@ -919,12 +919,12 @@
       const chip = document.createElement("button");
       chip.type = "button";
       chip.className = "recent-playlist-chip";
+      chip.title = p.name;
+      chip.setAttribute("aria-label", p.name);
       const img = document.createElement("img");
       img.src = p.cover || "";
       img.alt = "";
-      const span = document.createElement("span");
-      span.textContent = p.name;
-      chip.append(img, span);
+      chip.appendChild(img);
       chip.addEventListener("click", () => {
         playlistInput.value = `https://open.spotify.com/playlist/${p.id}`;
         loadPlaylistFromInput();

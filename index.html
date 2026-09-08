@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://liujontw-create.github.io/absolutelymysong/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chewy&family=Space+Grotesk:wght@600;700&family=Quicksand:wght@500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css?v=12">
+<link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
 
@@ -131,13 +131,13 @@
     <h2>貼上歌單連結</h2>
     <p class="hint">玩家可以自行在 Spotify App 裡把歌加進這個歌單。貼上連結後會自動載入。</p>
 
-    <div id="recentPlaylists" class="recent-playlists" hidden>
-      <label>最近使用</label>
-      <div id="recentPlaylistsList" class="recent-playlists-list"></div>
-    </div>
-
     <div class="field-row">
-      <input id="playlistInput" type="text" inputmode="url" placeholder="https://open.spotify.com/playlist/xxxxxxxx">
+      <div class="playlist-input-wrap">
+        <input id="playlistInput" type="text" inputmode="url" placeholder="https://open.spotify.com/playlist/xxxxxxxx">
+        <div id="recentPlaylists" class="recent-playlists" hidden>
+          <div id="recentPlaylistsList" class="recent-playlists-list"></div>
+        </div>
+      </div>
     </div>
     <p id="playlistError" class="error-text" hidden></p>
     <p id="playlistLoading" class="hint" hidden>載入中…</p>
@@ -340,6 +340,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script src="app.js?v=13"></script>
+<script src="app.js?v=14"></script>
 </body>
 </html>
