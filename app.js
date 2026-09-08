@@ -15,7 +15,10 @@
     refreshToken: "ams.refreshToken",
     expiresAt: "ams.expiresAt",
     grantedScope: "ams.grantedScope",
+    recentPlaylists: "ams.recentPlaylists",
   };
+
+  const MAX_RECENT_PLAYLISTS = 5;
 
   const redirectUri = window.location.origin + window.location.pathname;
 
@@ -41,6 +44,8 @@
   const qrCanvas = el("qrCanvas");
 
   const playlistInput = el("playlistInput");
+  const recentPlaylists = el("recentPlaylists");
+  const recentPlaylistsList = el("recentPlaylistsList");
   const playlistError = el("playlistError");
   const playlistLoading = el("playlistLoading");
   const playlistInfo = el("playlistInfo");
@@ -891,6 +896,44 @@
     startGameBtn.hidden = !(tracksLoaded && selectedDeviceId);
   }
 
+  // ---------- Recently used playlists (localStorage only, most-recent-first) ----------
+  function getRecentPlaylists() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(LS_KEYS.recentPlaylists) || "[]");
+      return Array.isArray(raw) ? raw : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveRecentPlaylist(entry) {
+    const list = getRecentPlaylists().filter((p) => p.id !== entry.id);
+    list.unshift(entry);
+    localStorage.setItem(LS_KEYS.recentPlaylists, JSON.stringify(list.slice(0, MAX_RECENT_PLAYLISTS)));
+  }
+
+  function renderRecentPlaylists() {
+    const list = getRecentPlaylists();
+    recentPlaylistsList.innerHTML = "";
+    list.forEach((p) => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "recent-playlist-chip";
+      const img = document.createElement("img");
+      img.src = p.cover || "";
+      img.alt = "";
+      const span = document.createElement("span");
+      span.textContent = p.name;
+      chip.append(img, span);
+      chip.addEventListener("click", () => {
+        playlistInput.value = `https://open.spotify.com/playlist/${p.id}`;
+        loadPlaylistFromInput();
+      });
+      recentPlaylistsList.appendChild(chip);
+    });
+    recentPlaylists.hidden = list.length === 0;
+  }
+
   async function loadPlaylistFromInput() {
     playlistError.hidden = true;
     const raw = playlistInput.value.trim();
@@ -910,9 +953,12 @@
       currentPlaylistId = playlistId;
       allTracks = tracks;
 
-      playlistCover.src = info.images?.[0]?.url || "";
+      const coverUrl = info.images?.[0]?.url || "";
+      playlistCover.src = coverUrl;
       playlistName.textContent = info.name;
       playlistCount.textContent = `${tracks.length} 首歌`;
+      saveRecentPlaylist({ id: playlistId, name: info.name, cover: coverUrl });
+      renderRecentPlaylists();
       playlistInfo.hidden = false;
       deviceSelect.hidden = false;
       modeSelect.hidden = false;
@@ -1027,6 +1073,7 @@
     }
 
     renderClientIdQr();
+    renderRecentPlaylists();
     initFoldReveal(rulesSection);
     initFoldReveal(privacySection);
 

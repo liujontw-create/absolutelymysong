@@ -474,6 +474,56 @@ button {
   display: block;
 }
 
+.recent-playlists {
+  margin: 14px 0;
+}
+
+.recent-playlists > label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+  margin-bottom: 8px;
+}
+
+.recent-playlists-list {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.recent-playlist-chip {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 160px;
+  background: linear-gradient(180deg, #ffffff, #eef2ff);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 14px 6px 6px;
+  box-shadow: 0 4px 10px rgba(140, 110, 220, 0.18);
+  color: var(--ink);
+  font-size: 0.82rem;
+}
+
+.recent-playlist-chip:hover { border-color: var(--pink); }
+
+.recent-playlist-chip img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--panel-2);
+  flex: none;
+}
+
+.recent-playlist-chip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .playlist-info {
   display: flex;
   align-items: center;
