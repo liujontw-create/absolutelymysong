@@ -75,6 +75,9 @@
   const teamAResetBtn = el("teamAResetBtn");
   const teamBScoreBtn = el("teamBScoreBtn");
   const teamBResetBtn = el("teamBResetBtn");
+  const soloScore = el("soloScore");
+  const soloScoreBtn = el("soloScoreBtn");
+  const soloScoreResetBtn = el("soloScoreResetBtn");
   const reloadPlaylistBtn = el("reloadPlaylistBtn");
   const gestureToggleBtn = el("gestureToggleBtn");
   const flipCard = el("flipCard");
@@ -483,6 +486,24 @@
     return a;
   }
 
+  // Advanced option: cap how many rounds a game runs, independent of how many
+  // tracks pass the year/artist filters. 0 (or no selection) means unlimited.
+  function getQuestionCountLimit() {
+    const checked = document.querySelector('input[name="totalQuestions"]:checked');
+    return checked ? Number(checked.value) : 0;
+  }
+
+  // Shuffles the filtered pool and applies the total-question-count cap,
+  // updating both activeTracks (used for the progress counter's total) and
+  // the draw queue together so they stay consistent.
+  function buildRoundQueue(filtered) {
+    const shuffled = shuffle(filtered);
+    const limit = getQuestionCountLimit();
+    const capped = limit > 0 ? shuffled.slice(0, limit) : shuffled;
+    activeTracks = capped;
+    queue = capped.slice();
+  }
+
   function computeStartMs(track, mode) {
     const dur = track.duration_ms;
     if (mode === "intro" || !dur) return 0;
@@ -625,6 +646,10 @@
   teamAResetBtn.addEventListener("click", () => setScore(teamAScoreBtn, 0));
   teamBResetBtn.addEventListener("click", () => setScore(teamBScoreBtn, 0));
 
+  // ---------- Solo correct-answer tally (individual mode, no teams) ----------
+  soloScoreBtn.addEventListener("click", () => setScore(soloScoreBtn, Number(soloScoreBtn.textContent) + 1));
+  soloScoreResetBtn.addEventListener("click", () => setScore(soloScoreBtn, 0));
+
   quizmasterModeToggle.addEventListener("change", updateHostPeek);
   teamModeToggle.addEventListener("change", updateHostPeek);
 
@@ -754,8 +779,7 @@
       setStatus("篩選條件太嚴格，沒有符合的歌曲，請回到上一頁調整年份或歌手篩選。");
       return;
     }
-    activeTracks = filtered;
-    queue = shuffle(activeTracks);
+    buildRoundQueue(filtered);
     playBtn.disabled = false;
     replayBtn.disabled = false;
     pauseBtn.disabled = false;
@@ -773,8 +797,7 @@
         setStatus("歌單已更新，但目前的篩選條件沒有符合的歌曲，請調整年份或歌手篩選。");
         return;
       }
-      activeTracks = filtered;
-      queue = shuffle(activeTracks);
+      buildRoundQueue(filtered);
       updateProgressCounter();
       setStatus("歌單已更新，共 " + allTracks.length + " 首歌。");
     } catch (e) {
@@ -921,12 +944,13 @@
       showError(playlistError, "篩選條件太嚴格，沒有符合的歌曲，請調整年份或歌手篩選。");
       return;
     }
-    activeTracks = filtered;
-    queue = shuffle(activeTracks);
+    buildRoundQueue(filtered);
     resetSessionTimer();
     scoreboard.hidden = !teamModeToggle.checked;
+    soloScore.hidden = teamModeToggle.checked;
     setScore(teamAScoreBtn, 0);
     setScore(teamBScoreBtn, 0);
+    setScore(soloScoreBtn, 0);
     playlistSection.hidden = true;
     gameSection.hidden = false;
     drawNextTrack();

@@ -11,7 +11,7 @@
 <meta property="og:url" content="https://liujontw-create.github.io/absolutelymysong/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chewy&family=Space+Grotesk:wght@600;700&family=Quicksand:wght@500;600;700;800&display=swap">
-<link rel="stylesheet" href="style.css?v=10">
+<link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 
@@ -169,6 +169,7 @@
     <div id="durationSelect" class="mode-select" hidden>
       <label>播放長度</label>
       <div class="mode-options duration-options">
+        <label class="mode-option"><input type="radio" name="playDuration" value="1">1 秒</label>
         <label class="mode-option"><input type="radio" name="playDuration" value="5">5 秒</label>
         <label class="mode-option"><input type="radio" name="playDuration" value="10">10 秒</label>
         <label class="mode-option"><input type="radio" name="playDuration" value="15" checked>15 秒</label>
@@ -179,6 +180,16 @@
 
     <details id="advancedOptions" class="advanced-options" hidden>
       <summary>進階選項</summary>
+
+      <div class="field-row">
+        <label>總題數</label>
+        <div class="mode-options">
+          <label class="mode-option"><input type="radio" name="totalQuestions" value="10">10 題</label>
+          <label class="mode-option"><input type="radio" name="totalQuestions" value="20">20 題</label>
+          <label class="mode-option"><input type="radio" name="totalQuestions" value="30">30 題</label>
+          <label class="mode-option"><input type="radio" name="totalQuestions" value="0" checked>不限</label>
+        </div>
+      </div>
 
       <div class="field-row">
         <label>年份範圍</label>
@@ -254,6 +265,14 @@
       </div>
     </div>
 
+    <div id="soloScore" class="solo-score" hidden>
+      <div class="team-score-block">
+        <button id="soloScoreBtn" class="score-value" type="button" aria-label="答對加一">0</button>
+        <button id="soloScoreResetBtn" class="score-reset" type="button" title="歸零" aria-label="歸零">歸零</button>
+      </div>
+      <div class="solo-score-label">答對次數</div>
+    </div>
+
     <div class="card-stage">
       <div id="flipCard" class="flip-card">
         <div class="flip-card-inner">
@@ -314,6 +333,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-<script src="app.js?v=11"></script>
+<script src="app.js?v=12"></script>
 </body>
 </html>
